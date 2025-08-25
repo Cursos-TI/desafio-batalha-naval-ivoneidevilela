@@ -1,10 +1,83 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
+#define TAM 5
+#define NAVIOS 3
+
+void inicializarTabuleiro(char t[TAM][TAM]) {
+    for (int i = 0; i < TAM; i++)
+        for (int j = 0; j < TAM; j++)
+            t[i][j] = '~'; // água
+}
+
+void posicionarNavios(char t[TAM][TAM]) {
+    srand((unsigned)time(NULL));
+    for (int n = 0; n < NAVIOS; n++) {
+        int x, y;
+        do {
+            x = rand() % TAM;
+            y = rand() % TAM;
+        } while (t[x][y] == 'N');
+        t[x][y] = 'N';
+    }
+}
+
+void exibirTabuleiro(char t[TAM][TAM], int revelar) {
+    printf("  ");
+    for (int i = 0; i < TAM; i++) printf("%d ", i);
+    printf("\n");
+    for (int i = 0; i < TAM; i++) {
+        printf("%d ", i);
+        for (int j = 0; j < TAM; j++) {
+            char c = t[i][j];
+            if (c == 'N' && !revelar) c = '~';
+            printf("%c ", c);
+        }
+        printf("\n");
+    }
+}
+
+int main(void) {
+    char tab[TAM][TAM];
+    int acertos = 0;
+
+    inicializarTabuleiro(tab);
+    posicionarNavios(tab);
+
+    printf("=== BATALHA NAVAL ===\n");
+    while (acertos < NAVIOS) {
+        int x, y;
+        exibirTabuleiro(tab, 0);
+        printf("Digite linha e coluna (0-%d): ", TAM - 1);
+        if (scanf("%d %d", &x, &y) != 2) {
+            printf("\nEntrada inválida. Encerrando.\n");
+            return 0;
+        }
+        if (x < 0 || x >= TAM || y < 0 || y >= TAM) {
+            printf("Coordenada fora do tabuleiro!\n");
+            continue;
+        }
+        if (tab[x][y] == 'N') {
+            printf("💥 Acertou um navio!\n");
+            tab[x][y] = 'X';
+            acertos++;
+        } else if (tab[x][y] == '~') {
+            printf("🌊 Água!\n");
+            tab[x][y] = 'O';
+        } else {
+            printf("Você já tentou essa posição.\n");
+        }
+    }
+
+    printf("\n🎉 Parabéns! Você afundou todos os navios!\n");
+    exibirTabuleiro(tab, 1);
+    return 0;
+}
 // Desafio Batalha Naval - MateCheck
 // Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
 // Siga os comentários para implementar cada parte do desafio.
 
-int main() {
     // Nível Novato - Posicionamento dos Navios
     // Sugestão: Declare uma matriz bidimensional para representar o tabuleiro (Ex: int tabuleiro[5][5];).
     // Sugestão: Posicione dois navios no tabuleiro, um verticalmente e outro horizontalmente.
@@ -35,6 +108,3 @@ int main() {
     // 0 0 1 0 0
     // 1 1 1 1 1
     // 0 0 1 0 0
-
-    return 0;
-}
